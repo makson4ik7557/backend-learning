@@ -21,3 +21,14 @@ console.log(getMax(numbers));
 const numbers2 = [1, 2, 3, 4, 5, 6, 7, 8];
 const sum = numbers2.filter(num => num % 2 === 0).map(num => num * 3).reduce((acc,num) => acc + num , 0);
 console.log(sum);
+
+const user = {
+    name: "Максим",
+    age: 19,
+    isAdult: true
+};
+
+function getUser ({name, age , isAdult}){
+    return isAdult ? `${name}, ${age} років, дорослий` : `${name}, ${age} років, неповнолітній`;
+}
+console.log(getUser(user));
