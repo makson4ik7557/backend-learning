@@ -60,4 +60,28 @@ async function main(){
         console.error("помилка:" , error)
     }
 }
-main();
+
+class BankAccount {
+    constructor(balance){
+        this.balance = balance;
+    }
+    deposit(amount){
+        this.balance += amount;
+    }
+    withdraw(amount){
+        if(this.balance < amount){
+            console.log("Недостатньо коштів");
+            return;
+        }
+        this.balance -= amount;
+    }
+    getBalance(){
+        return this.balance;
+    }
+}
+
+const account = new BankAccount(100);
+account.deposit(50);
+account.withdraw(30);
+account.withdraw(200);
+account.getBalance();
