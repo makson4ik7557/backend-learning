@@ -79,9 +79,9 @@ class BankAccount {
         return this.balance;
     }
 }
-
 const account = new BankAccount(100);
 account.deposit(50);
 account.withdraw(30);
 account.withdraw(200);
 account.getBalance();
+
