@@ -1,0 +1,15 @@
+### GET request to example server
+POST http://localhost:3000/markets
+Content-Type: application/json
+
+{
+  "question": "BTC higher than 60k",
+  "price": 52,
+  "status": "unresolved"
+}
+###
+
+###
+GET http://localhost:3000/markets/3
+Accept: application/json
+###
