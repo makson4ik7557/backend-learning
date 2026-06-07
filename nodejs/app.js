@@ -38,12 +38,12 @@ app.get('/markets', (req,res) => {
 
 app.get('/markets/:id', (req, res) => {
     const market = markets.find(m => m.id === Number(req.params.id));
-    if(!market) return res.status(404).json({ message: 'Not found' });
+    if(!market) return res.status(404).json({ message: 'Not found the market with such id'});
     return res.json(market);
 })
 app.post('/markets', (req, res) => {
     const {question , price , status} = req.body;
-    if(!question || !price || !status) return res.status(400).json({error: "You should fill your question , price and status!"})
+    if(!question || !price || !status) return res.status(400).json({error: "You should fill your question , price and status!"});
     const newMarket = {
         id: basicId += 1,
         question: question,
@@ -54,4 +54,21 @@ app.post('/markets', (req, res) => {
     res.status(201).json(newMarket);
 });
 
-app.listen(port);
+app.patch('/markets/:id', (req, res) => {
+    let market = markets.find(m => m.id === Number(req.params.id));
+    if(!market) return res.status(404).json({error: 'Not found the market with such id'});
+    const {status} = req.body;
+    market.status = status;
+    res.json(market);
+})
+
+app.delete('/markets/:id', (req, res) => {
+    const marketId = markets.findIndex(m => m.id === Number(req.params.id))
+    if(marketId === -1) return res.status(404).json({message: 'Not found the market with such id'});
+    markets.splice(marketId, 1);
+    res.status(204).end();
+})
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
