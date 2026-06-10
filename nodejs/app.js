@@ -14,6 +14,7 @@ const users = [
 const markets = [
     { id: basicId += 1, question: "Will trump say the word Ukraine", price: 5, status: "unresolved"},
     { id: basicId += 1, question: "Will BTC hit 200k before GTA 6", price: 2, status: "unresolved"},
+    { id: basicId += 1, question: "Will BTC hit 60k before GTA 6", price: 2, status: "resolved"},
 ];
 
 const express = require("express");
@@ -33,7 +34,14 @@ app.get('/users/:id', (req,res) => {
 })
 
 app.get('/markets', (req,res) => {
-    res.json(markets);
+    const status = req.query.status;
+    if(status) {
+        const filtredMarkets = markets.filter(m => m.status === status)
+        res.json(filtredMarkets);
+    }
+    else {
+        res.json(markets);
+    }
 })
 
 app.get('/markets/:id', (req, res) => {
