@@ -36,8 +36,8 @@ app.get('/users/:id', (req,res) => {
 app.get('/markets', (req,res) => {
     const status = req.query.status;
     if(status) {
-        const filtredMarkets = markets.filter(m => m.status === status)
-        res.json(filtredMarkets);
+        const filteredMarkets = markets.filter(m => m.status === status)
+        res.json(filteredMarkets);
     }
     else {
         res.json(markets);
