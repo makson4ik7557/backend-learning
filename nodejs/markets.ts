@@ -1,8 +1,9 @@
+type marketStatus = "unresolved" | "resolved";
 interface Market {
     id : number;
     question : string;
     price : number;
-    status : "unresolved" | "resolved";
+    status : marketStatus;
 }
 const markets : Market[] = [
     {
@@ -28,7 +29,7 @@ const markets : Market[] = [
 function findMarket (array: Market[], exact:number) : Market | undefined {
     return array.find(m => m.id === exact);
 }
-function showMarketsWithExactStatus (array: Market[], exactStatus: "unresolved" | "resolved"): Market[] {
+function showMarketsWithExactStatus (array: Market[], exactStatus: marketStatus): Market[] {
     return array.filter(m => m.status === exactStatus);
 }
 
