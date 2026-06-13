@@ -1,11 +1,11 @@
-type marketStatus = "unresolved" | "resolved";
-interface Market {
+export type marketStatus = "unresolved" | "resolved";
+export interface Market{
     id : number;
     question : string;
     price : number;
     status : marketStatus;
 }
-const markets : Market[] = [
+const markets: Market[] = [
     {
         id: 1,
         question: "Will Trump say something about UFC",
