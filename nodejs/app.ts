@@ -1,6 +1,6 @@
 import express from "express";
 import type {Response,Request} from "express";
-import type {Market} from "./markets.js";
+import type {Market, marketStatus} from "./markets.js";
 let basicId = 0;
 
 const markets: Market[] = [
@@ -29,14 +29,23 @@ app.get('/markets/:id', (req:Request,res:Response) => {
     if(!market) return res.status(404).json({ message: 'Not found the market with such id'});
     return res.json(market);
 })
+
 app.post('/markets', (req:Request,res:Response) => {
     const {question , price , status} = req.body;
-    if(!question || !price || !status) return res.status(400).json({error: "You should fill your question , price and status!"});
+    if(typeof question !== "string" || question.trim() === ""){
+        return res.status(400).json({error: "Your question should be entered in text format and you should not leave empty your question!"});
+    }
+    if(typeof price !== "number"){
+        return res.status(400).json({error: "Price should be number!"});
+    }
+    if(typeof status !== "string"){
+        return res.status(400).json({error: "Your status should be string!"});
+    }
     const newMarket = {
         id: basicId += 1,
         question: question,
         price: price,
-        status: status
+        status: status as marketStatus
     };
     markets.push(newMarket);
     res.status(201).json(newMarket);
@@ -46,7 +55,10 @@ app.patch('/markets/:id', (req:Request,res:Response) => {
     const market = markets.find(m => m.id === Number(req.params.id));
     if(!market) return res.status(404).json({error: 'Not found the market with such id'});
     const {status} = req.body;
-    market.status = status;
+    if(typeof status !== "string"){
+        return res.status(400).json({error: "Your status should be string!"});
+    }
+    market.status = status as marketStatus;
     res.json(market);
 })
 
