@@ -1,8 +1,9 @@
 import express from "express";
 import type {Response,Request} from "express";
-import type {Market, marketStatus} from "./markets.js";
-let basicId = 0;
+import type {Market} from "./markets.js";
+import {isMarketStatus} from "./markets.js";
 
+let basicId = 0;
 const markets: Market[] = [
     { id: basicId += 1, question: "Will trump say the word Ukraine", price: 5, status: "unresolved"},
     { id: basicId += 1, question: "Will BTC hit 200k before GTA 6", price: 2, status: "unresolved"},
@@ -41,11 +42,14 @@ app.post('/markets', (req:Request,res:Response) => {
     if(typeof status !== "string"){
         return res.status(400).json({error: "Your status should be string!"});
     }
-    const newMarket = {
+    if (!isMarketStatus(status)){
+        return res.status(400).json({error: "Status should be either resolved or unresolved!"})
+    }
+    const newMarket: Market = {
         id: basicId += 1,
         question: question,
         price: price,
-        status: status as marketStatus
+        status: status
     };
     markets.push(newMarket);
     res.status(201).json(newMarket);
@@ -58,7 +62,10 @@ app.patch('/markets/:id', (req:Request,res:Response) => {
     if(typeof status !== "string"){
         return res.status(400).json({error: "Your status should be string!"});
     }
-    market.status = status as marketStatus;
+    if (!isMarketStatus(status)){
+        return res.status(400).json({error: "Status should be either resolved or unresolved!"})
+    }
+    market.status = status;
     res.json(market);
 })
 

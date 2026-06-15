@@ -22,3 +22,8 @@
 Додав валідацію присутності й типів на POST і PATCH /markets (typeof-чеки, 400 при невалідному body).
 Зловив: TS2345 — string не присвоюється marketStatus (union вужчий за string), бо валідація перевіряє тип, але не дозволене значення.
 Зрозумів: typeof-чек ловить тип, але не value; status="asdfgh" пройшов би. Завтра — нормальна перевірка через .includes замість as-каста.
+
+2026-06-15
+Закрив борг з минулого дня: прибрав as-касти, зробив type guard isMarketStatus (curStatus is marketStatus) з .includes; виніс валідацію статусу + тип + масив у markets.ts, розділив import type / import value в app.ts.
+Зловив: TS1361 — значення не можна тягнути через import type (стирається в рантаймі); звуження змінної не протягується в новостворений об'єкт; allowedStatuses-масив джерело, marketStatus виведений через typeof[number] + as const.
+Зрозумів: межа тип/значення скрізь одна (as const, type guard, import) — тип це компайл-тайм і стирається, значення живе в рантаймі. Код живе там, де дані: усе про статус → markets.ts, app.ts тільки HTTP.
