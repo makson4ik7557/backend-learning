@@ -27,3 +27,8 @@
 Закрив борг з минулого дня: прибрав as-касти, зробив type guard isMarketStatus (curStatus is marketStatus) з .includes; виніс валідацію статусу + тип + масив у markets.ts, розділив import type / import value в app.ts.
 Зловив: TS1361 — значення не можна тягнути через import type (стирається в рантаймі); звуження змінної не протягується в новостворений об'єкт; allowedStatuses-масив джерело, marketStatus виведений через typeof[number] + as const.
 Зрозумів: межа тип/значення скрізь одна (as const, type guard, import) — тип це компайл-тайм і стирається, значення живе в рантаймі. Код живе там, де дані: усе про статус → markets.ts, app.ts тільки HTTP.
+
+2026-06-16
+Виніс валідацію body з POST/PATCH у middleware (validateCreate / validateUpdate), хендлери схудли до бізнес-логіки. Налаштував запуск через tsx (npm run dev з watch) замість зламаного node app.ts.
+Зловив: node app.ts падає на TS+ESM; middleware це (req,res,next) — перевірив → 400+return або next(); req.market з типізацією свідомо не брав, лишив простий пошук у хендлері.
+Зрозумів: middleware не прибирає if, а прибирає дубль і розвантажує хендлер; рукописна валідація = проміжна форма, далі zod; одна-чи-дві middleware вирішує кількість випадків, не «щоб не змішувати».

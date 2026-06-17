@@ -1,7 +1,8 @@
 import express, {type NextFunction} from "express";
 import type {Response,Request} from "express";
 import type {Market} from "./markets.js";
-import {isMarketStatus} from "./markets.js";
+import {isMarketStatus,allowedStatuses} from "./markets.js";
+import {z} from "zod"
 
 let basicId = 0;
 const markets: Market[] = [
@@ -14,31 +15,29 @@ const app = express();
 let port = 3000;
 app.use(express.json());
 
+const createMarket = z.object({
+    question: z.string().min(1),
+    price: z.number(),
+    status: z.enum(allowedStatuses)
+}).strict();
+
+const updateMarket = createMarket.pick({status: true});
+
 function validateCreate(req: Request,res:Response,next: NextFunction){
-    const {question , price , status} = req.body;
-    if(typeof question !== "string" || question.trim() === ""){
-        return res.status(400).json({error: "Your question should be entered in text format and you should not leave empty your question!"});
+    const result = createMarket.safeParse(req.body);
+    if(!result.success){
+        return res.status(400).json({error: result.error});
+    } else {
+        next();
     }
-    if(typeof price !== "number"){
-        return res.status(400).json({error: "Price should be number!"});
-    }
-    if(typeof status !== "string"){
-        return res.status(400).json({error: "Your status should be string!"});
-    }
-    if (!isMarketStatus(status)){
-        return res.status(400).json({error: "Status should be either resolved or unresolved!"})
-    }
-    next();
 }
 function validateUpdate(req:Request,res:Response,next:NextFunction){
-    const {status} = req.body;
-    if(typeof status !== "string"){
-        return res.status(400).json({error: "Your status should be string!"});
+    const result = updateMarket.safeParse(req.body);
+    if(!result.success){
+        return res.status(400).json({error: result.error});
+    } else {
+        next();
     }
-    if (!isMarketStatus(status)){
-        return res.status(400).json({error: "Status should be either resolved or unresolved!"})
-    }
-    next();
 }
 
 app.get('/markets', (req:Request,res:Response) => {
@@ -58,7 +57,7 @@ app.get('/markets/:id', (req:Request,res:Response) => {
     return res.json(market);
 })
 
-app.post('/markets',validateCreate, (req:Request,res:Response) => {
+app.post('/markets', validateCreate, (req:Request,res:Response) => {
     const {question , price , status} = req.body;
     const newMarket: Market = {
         id: basicId += 1,
@@ -70,7 +69,7 @@ app.post('/markets',validateCreate, (req:Request,res:Response) => {
     res.status(201).json(newMarket);
 });
 
-app.patch('/markets/:id',validateUpdate, (req:Request,res:Response) => {
+app.patch('/markets/:id', validateUpdate, (req:Request,res:Response) => {
     const market = markets.find(m => m.id === Number(req.params.id));
     if(!market) return res.status(404).json({error: 'Not found the market with such id'});
     const {status} = req.body;
